@@ -1,8 +1,8 @@
 # list
 
 - [1.React-Quick start in old way](https://github.com/tyr-liu/blog/blob/master/react-step-by-step/1.React-Quick%20start%20in%20old%20way.md)
-- [2.React props](https://github.com/tyr-liu/blog/blob/master/react-step-by-step/2.React%20Properties.md)
-- [2.React state](https://github.com/tyr-liu/blog/blob/master/react-step-by-step/2.React%20State.md)
+- [2.React-Prop](https://github.com/tyr-liu/blog/blob/master/react-step-by-step/2.React%20Properties.md)
+- [3.React-State](https://github.com/tyr-liu/blog/blob/master/react-step-by-step/2.React%20State.md)
 - React event
 - React ref
 - Real World
