@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TOODs</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link href="./css/app.css" rel="stylesheet">
+    <link href="./css/base.css" rel="stylesheet">
+    <script src="./build/react.js"></script>
+    <script src="./build/react-dom.js"></script>
+    <script src="./js/babel.min.js"></script>
+    <script src="./js/constants.js"></script>
+    <script src="./js/state.js"></script>
+</head>
+<body>
+<section id="todoapp"></section>
+<script type="text/babel">
+    var TodoTextInput = React.createClass({
+
+        propTypes: {
+            className: React.PropTypes.string,
+            id: React.PropTypes.string,
+            placeholder: React.PropTypes.string,
+            onSave: React.PropTypes.func.isRequired,
+            value: React.PropTypes.string
+        },
+
+        getInitialState: function () {
+            return {
+                value: this.props.value || ''
+            };
+        },
+
+        render: function () {
+            return (<input
+                className={this.props.className}
+                id={this.props.id}
+                placeholder={this.props.placeholder}
+                onBlur={this._save}
+                onChange={this._onChange}
+                onKeyDown={this._onKeyDown}
+                value={this.state.value}
+                autoFocus={true}
+            />);
+        },
+
+        _save: function () {
+            this.props.onSave(this.state.value);
+            this.setState({
+                value: ''
+            });
+        },
+
+        _onChange: function (event) {
+            this.setState({
+                value: event.target.value
+            });
+        },
+
+        _onKeyDown: function (event) {
+            if (event.keyCode === ENTER_KEY_CODE) {
+                this._save();
+            }
+        }
+
+    });
+
+    var Header = React.createClass({
+        render: function () {
+            return (<header id="header">
+                <h1>TODOs</h1>
+                <input
+                    id="toggle-all-header"
+                    type="checkbox"
+                    onChange={this._onToggleCompleteAll}
+                    checked={this.props.areAllComplete ? 'checked' : ''}
+                />
+                <TodoTextInput
+                    id="new-todo"
+                    placeholder="想干啥?"
+                    onSave={this.props.onSave}
+                />
+            </header>);
+        },
+
+        _onToggleCompleteAll: function () {
+            this.props.toggleCompleteAll();
+        }
+    });
+
+    var TodoItem = React.createClass({
+
+        propTypes: {
+            todo: React.PropTypes.object.isRequired
+        },
+
+        getInitialState: function () {
+            return {
+                isEditing: false
+            };
+        },
+
+        /**
+         * @return {object}
+         */
+        render: function () {
+            var todo = this.props.todo;
+
+            var input;
+            if (this.state.isEditing) {
+                input =
+                    <TodoTextInput
+                        className="edit"
+                        onSave={this._onUpdateText}
+                        value={todo.text}
+                    />;
+            }
+
+            var className = {
+                'completed': todo.complete,
+                'editing': this.state.isEditing
+            };
+            var classes = [];
+
+            var hasOwn = {}.hasOwnProperty;
+
+            for (var key in className) {
+                if (hasOwn.call(className, key) && className[key]) {
+                    classes.push(key);
+                }
+            }
+
+
+            return (
+                <li
+                    className={classes.join(' ')}
+                    key={todo.id}>
+                    <div className="view">
+                        <input
+                            className="toggle"
+                            type="checkbox"
+                            checked={todo.complete}
+                            onChange={this._onToggleComplete}
+                        />
+                        <label onDoubleClick={this._onDoubleClick}>
+                            {todo.text}
+                        </label>
+                        <button className="destroy" onClick={this._onDestroyClick}/>
+                    </div>
+                    {input}
+                </li>
+            );
+        },
+
+        _onToggleComplete: function () {
+            this.props.toggleComplete(this.props.todo);
+        },
+
+        _onDoubleClick: function () {
+            this.setState({isEditing: true});
+        },
+
+        _onUpdateText: function (text) {
+            this.props.updateText(this.props.todo.id, text);
+            this.setState({isEditing: false});
+        },
+
+        _onDestroyClick: function () {
+            this.props.destroy(this.props.todo.id);
+        }
+    });
+
+
+    var MainSection = React.createClass({
+
+        propTypes: {
+            allTodos: React.PropTypes.array.isRequired
+        },
+
+        render: function () {
+            if (Object.keys(this.props.allTodos).length < 1) {
+                return null;
+            }
+
+            var allTodos = this.props.allTodos.filter(TODO_FILTERS[this.props.selectedFilter]);
+            var todos = [];
+
+            for (var key in allTodos) {
+                todos.push(<TodoItem key={key} todo={allTodos[key]}
+                                     updateText={this.props.updateText}
+                                     toggleComplete={this.props.toggleComplete}
+                                     destroy={this.props.destroy}/>);
+            }
+
+            return (
+                <section id="main">
+                    <ul id="todo-list">{todos}</ul>
+                </section>);
+        },
+
+        _onToggleCompleteAll: function () {
+            this.props.toggleCompleteAll();
+        }
+
+    });
+
+
+    var Footer = React.createClass({
+
+        propTypes: {
+            allTodos: React.PropTypes.array.isRequired
+        },
+
+        render: function () {
+            var allTodos = this.props.allTodos;
+            var selectedFilter = this.props.selectedFilter;
+            var total = Object.keys(allTodos).length;
+
+            if (total === 0) {
+                return null;
+            }
+
+            var completed = 0;
+            for (var key in allTodos) {
+                if (allTodos[key].complete) {
+                    completed++;
+                }
+            }
+
+            var itemsLeft = total - completed;
+            var itemsLeftPhrase = itemsLeft === 1 ? ' 项目 ' : ' 项目 ';
+            itemsLeftPhrase += '未完成';
+
+            var clearCompletedButton;
+            if (completed) {
+                clearCompletedButton =
+                    <button
+                        id="clear-completed"
+                        onClick={this._onClearCompletedClick}>
+                        清除已完成条目 ({completed})
+                    </button>;
+            }
+            var onFilter = this.props.onFilter;
+
+            return (
+                <footer id="footer">
+                        <span id="todo-count">
+                        <strong>
+                            {itemsLeft}
+                        </strong>
+                            {itemsLeftPhrase}
+                        </span>
+                    <ul className="filters">
+                        {[SHOW_ALL, SHOW_ACTIVE, SHOW_COMPLETED].map(filter =>
+                            <li key={filter}>
+                                <a className={ filter === selectedFilter?'selected':'' }
+                                   style={{ cursor: 'pointer' }}
+                                   onClick={function(){onFilter(filter);}}>
+                                    {FILTER_TITLES[filter]}
+                                </a>
+                            </li>
+                        )}
+                    </ul>
+                    {clearCompletedButton}
+                </footer>
+            );
+        },
+
+        _onClearCompletedClick: function () {
+            this.props.destroyCompleted();
+        }
+
+    });
+
+    var TodoApp = React.createClass({
+        getInitialState: function () {
+            return state
+        },
+
+        componentDidMount: function () {
+        },
+
+        componentWillUnmount: function () {
+        },
+
+        /**
+         * @return {object}
+         */
+        render: function () {
+            state.areAllComplete = this._areAllComplete();
+            return (
+                <div>
+                    <Header onSave={this._onSave}
+                        toggleCompleteAll={this._toggleCompleteAll}
+                        areAllComplete={this.state.areAllComplete}
+                    />
+                    <MainSection
+                        allTodos={this.state.allTodos}
+                        updateText={this._updateText}
+                        toggleComplete={this._toggleComplete}
+                        destroy={this._destroy}
+                        selectedFilter={this.state.selectedFilter}
+                    />
+                    <Footer allTodos={this.state.allTodos}
+                            destroyCompleted={this._destroyCompleted}
+                            selectedFilter={this.state.selectedFilter}
+                            onFilter={this._filter}
+                    />
+                </div>
+            );
+        },
+
+
+        _onChange: function () {
+            this.setState(state);
+        },
+
+        _onSave: function (text) {
+            if (text.trim()) {
+                var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
+                state.allTodos.push({
+                    id: id,
+                    complete: false,
+                    text: text
+                });
+                this.setState(state);
+            }
+        },
+
+        _destroy: function (id) {
+            state.allTodos = state.allTodos.filter(function(todo){
+                 return todo.id !== id;
+               }
+            );
+            this.setState(state);
+        },
+
+        _updateText: function (id, text) {
+            state.allTodos = state.allTodos.map(function(todo){
+                if(todo.id === id){
+                    todo.text = text;
+                }
+                return todo;
+            });
+            this.setState(state);
+        },
+
+        _toggleCompleteAll: function () {
+            var complete = false;
+            complete = !this._areAllComplete();
+            for (var key in state.allTodos) {
+                state.allTodos[key].complete = complete;
+            }
+            this.setState(state);
+        },
+
+        _toggleComplete: function (todo) {
+            todo.complete = !todo.complete;
+            this.setState(state);
+        },
+
+        _areAllComplete: function () {
+            for (var id in state.allTodos) {
+                if (!state.allTodos[id].complete) {
+                    return false;
+                }
+            }
+            return true;
+        },
+
+        _destroyCompleted: function () {
+            for (var id in state.allTodos) {
+                if (state.allTodos[id].complete) {
+                    delete state.allTodos[id];
+                }
+            }
+            this.setState(state);
+        },
+
+        _filter: function (filter) {
+            state.selectedFilter = filter;
+            this.setState(state);
+        }
+
+    });
+
+    ReactDOM.render(
+        <TodoApp />,
+        document.getElementById('todoapp')
+    );
+
+</script>
+</body>
+</html>
