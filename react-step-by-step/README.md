@@ -4,7 +4,7 @@
 - [2.React Properties](https://github.com/tyr-liu/blog/blob/master/react-step-by-step/2.React%20Properties.md)
 - [3.React State](https://github.com/tyr-liu/blog/blob/master/react-step-by-step/3.React%20State.md)
 - [4.React Event](https://github.com/tyr-liu/blog/blob/master/react-step-by-step/4.React%20Event.md)
-- [5.React Event](https://github.com/tyr-liu/blog/blob/master/react-step-by-step/5.ECMAscript.md)
+- [5.ECMAScript](https://github.com/tyr-liu/blog/blob/master/react-step-by-step/5.ECMAscript.md)
 - Real World
 - Refactor Example with NPM and webpack
 - Refactor Example whit ES6
