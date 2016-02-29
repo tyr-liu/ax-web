@@ -20,6 +20,8 @@ ax-web是一套模式，框架本身由Layout决定，你可以替换不同的La
 -	[webpack](https://webpack.github.io/)
 -	[material-ui](http://www.material-ui.com/)(暂定)
 
+如果你对React并不了解，可以通过[react-step-by-step](react-step-by-step)系列了解更多
+
 follow this(╯‵□′)╯ [react-howto](https://github.com/petehunt/react-howto), maybe helpful. 
 
 ### modules
