@@ -1,42 +1,38 @@
 /**
  * Created by rain on 2016/2/29.
  */
-var Footer = React.createClass({
+class Footer extends React.Component {
 
-    propTypes: {
-        allTodos: React.PropTypes.array.isRequired
-    },
-
-    render: function () {
-        var allTodos = this.props.allTodos;
-        var selectedFilter = this.props.selectedFilter;
-        var total = Object.keys(allTodos).length;
+    render() {
+        let allTodos = this.props.allTodos;
+        let selectedFilter = this.props.selectedFilter;
+        let total = Object.keys(allTodos).length;
 
         if (total === 0) {
             return null;
         }
 
-        var completed = 0;
-        for (var key in allTodos) {
+        let completed = 0;
+        for (let key in allTodos) {
             if (allTodos[key].complete) {
                 completed++;
             }
         }
 
-        var itemsLeft = total - completed;
-        var itemsLeftPhrase = itemsLeft === 1 ? ' 项目 ' : ' 项目 ';
+        let itemsLeft = total - completed;
+        let itemsLeftPhrase = itemsLeft === 1 ? ' 项目 ' : ' 项目 ';
         itemsLeftPhrase += '未完成';
 
-        var clearCompletedButton;
+        let clearCompletedButton;
         if (completed) {
             clearCompletedButton =
                 <button
                     id="clear-completed"
-                    onClick={this._onClearCompletedClick}>
+                    onClick={this._onClearCompletedClick.bind(this)}>
                     清除已完成条目 ({completed})
                 </button>;
         }
-        var onFilter = this.props.onFilter;
+        let onFilter = this.props.onFilter;
 
         return (
             <footer id="footer">
@@ -60,10 +56,14 @@ var Footer = React.createClass({
                 {clearCompletedButton}
             </footer>
         );
-    },
+    }
 
-    _onClearCompletedClick: function () {
+    _onClearCompletedClick() {
         this.props.destroyCompleted();
     }
 
-});
+}
+
+Footer.propTypes = {
+    allTodos: React.PropTypes.array.isRequired
+};
