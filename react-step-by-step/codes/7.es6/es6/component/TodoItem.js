@@ -1,44 +1,36 @@
 /**
  * Created by rain on 2016/2/29.
  */
-
-var TodoItem = React.createClass({
-
-    propTypes: {
-        todo: React.PropTypes.object.isRequired
-    },
-
-    getInitialState: function () {
-        return {
+class TodoItem extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
             isEditing: false
         };
-    },
+    }
 
-    /**
-     * @return {object}
-     */
-    render: function () {
-        var todo = this.props.todo;
+    render() {
+        let todo = this.props.todo;
 
-        var input;
+        let input;
         if (this.state.isEditing) {
             input =
                 <TodoTextInput
                     className="edit"
-                    onSave={this._onUpdateText}
+                    onSave={this._onUpdateText.bind(this)}
                     value={todo.text}
                 />;
         }
 
-        var className = {
+        let className = {
             'completed': todo.complete,
             'editing': this.state.isEditing
         };
-        var classes = [];
+        let classes = [];
 
-        var hasOwn = {}.hasOwnProperty;
+        let hasOwn = {}.hasOwnProperty;
 
-        for (var key in className) {
+        for (let key in className) {
             if (hasOwn.call(className, key) && className[key]) {
                 classes.push(key);
             }
@@ -54,32 +46,38 @@ var TodoItem = React.createClass({
                         className="toggle"
                         type="checkbox"
                         checked={todo.complete}
-                        onChange={this._onToggleComplete}
+                        onChange={this._onToggleComplete.bind(this)}
                     />
-                    <label onDoubleClick={this._onDoubleClick}>
+                    <label onDoubleClick={this._onDoubleClick.bind(this)}>
                         {todo.text}
                     </label>
-                    <button className="destroy" onClick={this._onDestroyClick}/>
+                    <button className="destroy" onClick={this._onDestroyClick.bind(this)}/>
                 </div>
                 {input}
             </li>
         );
-    },
+    }
 
-    _onToggleComplete: function () {
+    _onToggleComplete() {
         this.props.toggleComplete(this.props.todo);
-    },
+    }
 
-    _onDoubleClick: function () {
+    _onDoubleClick() {
         this.setState({isEditing: true});
-    },
+    }
 
-    _onUpdateText: function (text) {
+
+    _onUpdateText(text) {
         this.props.updateText(this.props.todo.id, text);
         this.setState({isEditing: false});
-    },
+    }
 
-    _onDestroyClick: function () {
+    _onDestroyClick() {
         this.props.destroy(this.props.todo.id);
     }
-});
+}
+
+TodoItem.propTypes =
+{
+    todo: React.PropTypes.object.isRequired
+};

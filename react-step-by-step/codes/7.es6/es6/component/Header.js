@@ -1,8 +1,8 @@
 /**
  * Created by rain on 2016/2/29.
  */
-var Header = React.createClass({
-    render: function () {
+class Header extends React.Component {
+    render() {
         return (<header id="header">
             <h1>TODOs</h1>
             <TodoTextInput
@@ -12,4 +12,4 @@ var Header = React.createClass({
             />
         </header>);
     }
-});
+}

@@ -1,22 +1,18 @@
 /**
  * Created by rain on 2016/2/29.
  */
-var MainSection = React.createClass({
 
-    propTypes: {
-        allTodos: React.PropTypes.array.isRequired,
-        areAllComplete: React.PropTypes.bool.isRequired
-    },
+class MainSection extends React.Component{
 
-    render: function () {
+    render(){
         if (Object.keys(this.props.allTodos).length < 1) {
             return null;
         }
 
-        var allTodos = this.props.allTodos.filter(TODO_FILTERS[this.props.selectedFilter]);
-        var todos = [];
+        let allTodos = this.props.allTodos.filter(TODO_FILTERS[this.props.selectedFilter]);
+        let todos = [];
 
-        for (var key in allTodos) {
+        for (let key in allTodos) {
             todos.push(<TodoItem key={key} todo={allTodos[key]}
                                      updateText={this.props.updateText}
                                      toggleComplete={this.props.toggleComplete}
@@ -28,15 +24,20 @@ var MainSection = React.createClass({
                 <input
                     id="toggle-all"
                     type="checkbox"
-                    onChange={this._onToggleCompleteAll}
+                    onChange={this._onToggleCompleteAll.bind(this)}
                     checked={this.props.areAllComplete ? 'checked' : ''}
                 />
                 <ul id="todo-list">{todos}</ul>
             </section>);
-    },
+    }
 
-    _onToggleCompleteAll: function () {
+    _onToggleCompleteAll(){
         this.props.toggleCompleteAll();
     }
 
-});
+}
+
+MainSection.propTypes = {
+    allTodos: React.PropTypes.array.isRequired,
+    areAllComplete: React.PropTypes.bool.isRequired
+};
