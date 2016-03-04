@@ -18,9 +18,9 @@ var MainSection = React.createClass({
 
         for (var key in allTodos) {
             todos.push(<TodoItem key={key} todo={allTodos[key]}
-                                     updateText={this.props.updateText}
-                                     toggleComplete={this.props.toggleComplete}
-                                     destroy={this.props.destroy}/>);
+                                 updateText={this.props.updateText}
+                                 toggleComplete={this.props.toggleComplete}
+                                 destroy={this.props.destroy}/>);
         }
 
         return (

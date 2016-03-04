@@ -9,13 +9,13 @@ var TodoTextInput = React.createClass({
         placeholder: React.PropTypes.string,
         onSave: React.PropTypes.func.isRequired,
         value: React.PropTypes.string
-        },
+    },
 
-        getDefaultProps : function () {
-            return {
-                value: ''
-            };
-        },
+    getDefaultProps: function () {
+        return {
+            value: ''
+        };
+    },
 
     getInitialState: function () {
         return {
