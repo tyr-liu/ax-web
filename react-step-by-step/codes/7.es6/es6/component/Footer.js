@@ -20,7 +20,7 @@ class Footer extends React.Component {
         }
 
         let itemsLeft = total - completed;
-        let itemsLeftPhrase = itemsLeft === 1 ? ' 项目 ' : ' 项目 ';
+        let itemsLeftPhrase = ' 项目 ';
         itemsLeftPhrase += '未完成';
 
         let clearCompletedButton;
