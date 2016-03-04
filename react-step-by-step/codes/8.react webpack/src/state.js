@@ -4,10 +4,10 @@
 'use strict';
 import {SHOW_ALL} from './constants';
 
-const initstate = {
+const todoState = {
     allTodos: [],
     areAllComplete: true,
     selectedFilter: SHOW_ALL
 };
-export default initstate;
+export default todoState;
 
