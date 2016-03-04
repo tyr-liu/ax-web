@@ -14,9 +14,6 @@ var TodoItem = React.createClass({
         };
     },
 
-    /**
-     * @return {object}
-     */
     render: function () {
         var todo = this.props.todo;
 

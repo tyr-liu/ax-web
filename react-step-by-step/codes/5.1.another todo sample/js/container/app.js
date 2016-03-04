@@ -4,7 +4,7 @@
 var TodoApp = React.createClass({
 
     getInitialState: function () {
-        return state
+        return todoState
     },
 
     componentDidMount: function () {
@@ -14,7 +14,6 @@ var TodoApp = React.createClass({
     },
 
     render: function () {
-        state.areAllComplete = this._areAllComplete();
         return (
             <div>
                 <Header onSave={this._onSave}/>
@@ -38,56 +37,59 @@ var TodoApp = React.createClass({
 
 
     _onChange: function () {
-        this.setState(state);
+        this.setState(todoState);
     },
 
     _onSave: function (text) {
         if (text.trim()) {
             var id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
-            state.allTodos.push({
+            todoState.allTodos.push({
                 id: id,
                 complete: false,
                 text: text
             });
-            this.setState(state);
+            this.setState(todoState);
         }
     },
 
     _destroy: function (id) {
-        state.allTodos = state.allTodos.filter(function (todo) {
+        todoState.allTodos = todoState.allTodos.filter(function (todo) {
                 return todo.id !== id;
             }
         );
-        this.setState(state);
+        todoState.areAllComplete = this._areAllComplete();
+        this.setState(todoState);
     },
 
     _updateText: function (id, text) {
-        state.allTodos = state.allTodos.map(function (todo) {
+        todoState.allTodos = todoState.allTodos.map(function (todo) {
             if (todo.id === id) {
                 todo.text = text;
             }
             return todo;
         });
-        this.setState(state);
+        this.setState(todoState);
     },
 
     _toggleCompleteAll: function () {
         var complete = false;
-        complete = !this._areAllComplete();
-        for (var key in state.allTodos) {
-            state.allTodos[key].complete = complete;
+        todoState.areAllComplete = this._areAllComplete();
+        complete = !todoState.areAllComplete;
+        for (var key in todoState.allTodos) {
+            todoState.allTodos[key].complete = complete;
         }
-        this.setState(state);
+        this.setState(todoState);
     },
 
     _toggleComplete: function (todo) {
         todo.complete = !todo.complete;
-        this.setState(state);
+        todoState.areAllComplete = this._areAllComplete();
+        this.setState(todoState);
     },
 
     _areAllComplete: function () {
-        for (var id in state.allTodos) {
-            if (!state.allTodos[id].complete) {
+        for (var id in todoState.allTodos) {
+            if (!todoState.allTodos[id].complete) {
                 return false;
             }
         }
@@ -95,17 +97,18 @@ var TodoApp = React.createClass({
     },
 
     _destroyCompleted: function () {
-        for (var id in state.allTodos) {
-            if (state.allTodos[id].complete) {
-                delete state.allTodos[id];
+        for (var id in todoState.allTodos) {
+            if (todoState.allTodos[id].complete) {
+                delete todoState.allTodos[id];
             }
         }
-        this.setState(state);
+        todoState.areAllComplete = this._areAllComplete();
+        this.setState(todoState);
     },
 
     _filter: function (filter) {
-        state.selectedFilter = filter;
-        this.setState(state);
+        todoState.selectedFilter = filter;
+        this.setState(todoState);
     }
 });
 
