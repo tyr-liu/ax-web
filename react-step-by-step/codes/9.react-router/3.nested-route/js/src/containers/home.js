@@ -7,7 +7,6 @@
 'use strict';
 
 import React from 'react';
-import {Link} from 'react-router';
 
 class Home extends React.Component {
     static contextTypes = {
@@ -24,9 +23,6 @@ class Home extends React.Component {
         return (
             <div>
                 <h1>Home Page</h1>
-                <ul role="nav">
-                    <li><Link to="/factors">监测项目</Link></li>
-                </ul>
                 <button onClick={()=>{this.transitionTo('/login')}}>
                     点击后，登录失败，跳转到登录组件
                 </button>
