@@ -9,4 +9,4 @@
 - [7.Refactor Example whit ES6](7.Refactor%20Example%20whit%20ES6.md)
 - [8.Refactor Example with NPM and webpack](8.Refactor%20Example%20with%20NPM%20and%20webpack.md)
 - [9.React-Router](9.React-Router.md)
-- Flux(Redux)
+- [10.Redux](10.Redux.md)
