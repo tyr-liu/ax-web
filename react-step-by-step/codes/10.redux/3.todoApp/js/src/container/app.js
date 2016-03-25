@@ -1,22 +1,17 @@
-/**
- * Created by rain on 2016/2/29.
- */
-'use strict';
-
 import React from 'react';
-import ReactDOM from 'react-dom';
 import {ENTER_KEY_CODE, SHOW_ALL, SHOW_COMPLETED, SHOW_ACTIVE, TODO_FILTERS, FILTER_TITLES } from '../constants';
-import todoState from '../state';
+//import todoState from '../state';// 拿掉state，使用redux的store替代
+import {connect} from 'react-redux';
 import Header from '../component/Header';
 import MainSection from '../component/MainSection';
 import Footer from '../component/Footer';
 
 
-export default class TodoApp extends React.Component {
+class TodoApp extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = todoState;
+        //this.state = todoState;
     }
 
     render() {
@@ -113,3 +108,11 @@ export default class TodoApp extends React.Component {
         this.setState(todoState);
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        todoState: state
+    }
+}
+
+export default connect(mapStateToProps)(TodoApp);
