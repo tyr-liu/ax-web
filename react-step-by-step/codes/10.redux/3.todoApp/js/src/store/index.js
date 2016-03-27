@@ -1,10 +1,10 @@
 'use strict';
 
-import { createStore, combineReducers } from 'redux';
+import { createStore } from 'redux';
 import reducers from '../reducers';
 
 function configStore(){
-    return createStore(combineReducers(reducers));
+    return createStore(reducers);
 }
 
 export default configStore();

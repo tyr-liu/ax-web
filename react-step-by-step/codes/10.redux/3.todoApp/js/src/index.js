@@ -1,6 +1,7 @@
  'use strict';
  import React from 'react';
  import ReactDOM from 'react-dom';
+ import {Provider} from 'react-redux';// 引入react-redux
  import TodoApp from './container/app';
  import store from './store';// 通过redux创建的全局store对象
 
