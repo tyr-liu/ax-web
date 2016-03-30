@@ -28,6 +28,6 @@ export default class WebApi {
     });
 
     static delete = url => new Promise((resolve, reject) => {
-        request.delete(this.buildUrl(url)).end(resultHandler(resolve, reject));
+        request.delete(buildUrl(url)).end(resultHandler(resolve, reject));
     });
 };

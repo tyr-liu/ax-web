@@ -51,7 +51,7 @@ class TodoApp extends React.Component {
     }
 
     _toggleCompleteAll() {
-        this.props.dispatch(toggleCompleteAll());
+        this.props.dispatch(toggleCompleteAll(this.props.todoState.areAllComplete));
     }
 
     _toggleComplete(todo) {

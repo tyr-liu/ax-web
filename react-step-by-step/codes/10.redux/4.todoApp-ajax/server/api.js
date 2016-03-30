@@ -49,17 +49,25 @@ function* addTodo(ctx, next) {
 
 function* destroyTodo(ctx, next) {
     let id = ctx.params.id;
+    let condition = ctx.query;
+    console.log(ctx.query);
+    console.log(ctx.querystring);
     let error = true;
     let models = ctx.fs.dc.models;
 
     try {
-        let todo = yield models.Todo.findOne({where: {id: id}});
-        if (todo == null) {
-            throw new Error(`todo not found where id=${id}`);
+        if (!isNaN(id)) {
+            let todo = yield models.Todo.findOne({where: {id: id}});
+            if (todo == null) {
+                throw new Error(`todo not found where id=${id}`);
+            }
+            // deleting
+            yield models.Todo.destroy({where: {id: id}});
+            error = false;
+        } else if(!id && condition) {
+            yield models.Todo.destroy({where: condition});
+            error = false;
         }
-        // deleting
-        yield models.Todo.destroy({where: {id: id}});
-        error = false;
     } catch (e) {
         ctx.fs.logger.error(`path: ${ctx.path}, error: ${e}`);
     }
@@ -80,7 +88,11 @@ function* updateTodo(ctx, next) {
     let models = ctx.fs.dc.models;
 
     try {
-        if (id && info) {
+        if (!info) {
+            throw new Error(`params error`);
+        }
+
+        if (!isNaN(id)) {
             let todo = yield models.Todo.findOne({where: {id: id}});
             if (todo == null) {
                 throw new Error(`todo not found where id=${id}`);
@@ -88,7 +100,8 @@ function* updateTodo(ctx, next) {
             yield models.Todo.update(info, {where: {id: id}});
             error = false;
         } else {
-            throw new Error(`params error`);
+            yield models.Todo.update(info, {where: {id: {$gt: 0}}});
+            error = false;
         }
     } catch (e) {
         ctx.fs.logger.error(`path: ${ctx.path}, error: ${e}`);
@@ -108,7 +121,9 @@ module.exports = {
         app.fs.logger.log('info', '[TodoApp-API]', 'Inject routes into router.');
         router.get('/todos', co.wrap(getTodos));
         router.post('/todos', co.wrap(addTodo));
+        router.delete('/todos', co.wrap(destroyTodo));
         router.delete('/todos/:id', co.wrap(destroyTodo));
+        router.put('/todos', co.wrap(updateTodo));
         router.put('/todos/:id', co.wrap(updateTodo));
     },
     models: function (dc) {
