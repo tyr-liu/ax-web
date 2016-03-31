@@ -24,7 +24,7 @@ var Footer = React.createClass({
         }
 
         var itemsLeft = total - completed;
-        var itemsLeftPhrase = itemsLeft === 1 ? ' 项目 ' : ' 项目 ';
+        var itemsLeftPhrase = ' 项目 ';
         itemsLeftPhrase += '未完成';
 
         var clearCompletedButton;

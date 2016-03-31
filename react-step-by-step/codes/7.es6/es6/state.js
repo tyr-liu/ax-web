@@ -3,7 +3,7 @@
  */
 'use strict';
 
-const initstate = {
+const todoState = {
     allTodos: [],
     areAllComplete: true,
     selectedFilter: SHOW_ALL

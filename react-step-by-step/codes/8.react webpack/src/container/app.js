@@ -6,7 +6,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {ENTER_KEY_CODE, SHOW_ALL, SHOW_COMPLETED, SHOW_ACTIVE, TODO_FILTERS, FILTER_TITLES } from '../constants';
-import initstate from '../state';
+import todoState from '../state';
 import Header from '../component/Header';
 import MainSection from '../component/MainSection';
 import Footer from '../component/Footer';
@@ -16,83 +16,82 @@ export default class TodoApp extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = initstate;
+        this.state = todoState;
     }
 
     render() {
-        this.state.areAllComplete = this._areAllComplete();
         return (
             <div>
                 <Header onSave={this._onSave.bind(this)}/>
                 <MainSection
-                    allTodos={this.state.allTodos}
-                    areAllComplete={this.state.areAllComplete}
+                    allTodos={todoState.allTodos}
+                    areAllComplete={todoState.areAllComplete}
                     updateText={this._updateText.bind(this)}
                     toggleCompleteAll={this._toggleCompleteAll.bind(this)}
                     toggleComplete={this._toggleComplete.bind(this)}
                     destroy={this._destroy.bind(this)}
-                    selectedFilter={this.state.selectedFilter}
+                    selectedFilter={todoState.selectedFilter}
                 />
-                <Footer allTodos={this.state.allTodos}
+                <Footer allTodos={todoState.allTodos}
                         destroyCompleted={this._destroyCompleted.bind(this)}
-                        selectedFilter={this.state.selectedFilter}
+                        selectedFilter={todoState.selectedFilter}
                         onFilter={this._filter.bind(this)}
                 />
             </div>
         );
     }
 
-    _onChange() {
-        this.setState(this.state);
-    }
-
     _onSave(text) {
         if (text.trim()) {
             let id = (+new Date() + Math.floor(Math.random() * 999999)).toString(36);
-            this.state.allTodos.push({
+            todoState.allTodos.push({
                 id: id,
                 complete: false,
                 text: text
             });
-            this.setState(this.state);
+            todoState.areAllComplete = false;
+            this.setState(todoState);
         }
     }
 
     _destroy(id) {
-        this.state.allTodos = this.state.allTodos.filter(function (todo) {
+        todoState.allTodos = todoState.allTodos.filter(function (todo) {
                 return todo.id !== id;
             }
         );
-        this.setState(this.state);
+        todoState.areAllComplete = this._areAllComplete();
+        this.setState(todoState);
     };
 
     _updateText(id, text) {
-        this.state.allTodos = this.state.allTodos.map(function (todo) {
+        todoState.allTodos = todoState.allTodos.map(function (todo) {
             if (todo.id === id) {
                 todo.text = text;
             }
             return todo;
         });
-        this.setState(this.state);
+        this.setState(todoState);
     }
 
     _toggleCompleteAll() {
         let complete = false;
-        complete = !this._areAllComplete();
-        for (let key in this.state.allTodos) {
-            this.state.allTodos[key].complete = complete;
+        todoState.areAllComplete = this._areAllComplete();
+        complete = !todoState.areAllComplete;
+        for (let key in todoState.allTodos) {
+            todoState.allTodos[key].complete = complete;
         }
-        this.setState(this.state);
+        this.setState(todoState);
     }
 
     _toggleComplete(todo) {
         todo.complete = !todo.complete;
-        this.setState(this.state);
+        todoState.areAllComplete = this._areAllComplete();
+        this.setState(todoState);
     }
 
     _areAllComplete() {
-        for (let id in this.state.allTodos) {
-            if (!this.state.allTodos[id].complete) {
+        for (let id in todoState.allTodos) {
+            if (!todoState.allTodos[id].complete) {
                 return false;
             }
         }
@@ -100,24 +99,17 @@ export default class TodoApp extends React.Component {
     }
 
     _destroyCompleted() {
-        for (let id in this.state.allTodos) {
-            if (this.state.allTodos[id].complete) {
-                delete this.state.allTodos[id];
+        for (let id in todoState.allTodos) {
+            if (todoState.allTodos[id].complete) {
+                delete todoState.allTodos[id];
             }
         }
-        this.setState(this.state);
+        todoState.areAllComplete = this._areAllComplete();
+        this.setState(todoState);
     }
 
     _filter(filter) {
-        this.state.selectedFilter = filter;
-        this.setState(this.state);
+        todoState.selectedFilter = filter;
+        this.setState(todoState);
     }
 }
-
-
-(function () {
-    ReactDOM.render(
-        <TodoApp />,
-        document.getElementById('todoapp')
-    );
-})();
