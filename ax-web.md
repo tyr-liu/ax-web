@@ -69,11 +69,11 @@ babel配置文件
 "test": "jest", // 执行单元测试
 "start": "set NODE_ENV=development && webpack-dev-server --hot --port 5000",// 启动调试
 "build:dev": "set NODE_ENV=development && webpack-dev-server --hot",// 开发构建
-"build": "set NODE_ENV=production && webpack"// 发布构建
+"build": "set NODE_ENV=production && webpack --config webpack.config.prod.js -p"// 发布构建
 ```
 
-####	webpack.config.js
-webpack打包构建配置文件
+####	webpack.config.js(webpack.config.prod.js)
+webpack打包构建配置文件,webpack.config.js用于开发调试,webpack.config.prod.js用于打包构建
 
 ###	src代码结构
 ```
@@ -137,6 +137,36 @@ return <Layout sections={sections}/>
 -	`reducers`:全局对action的处理reducer或layout内部的reducer
 -	`store`:全局唯一的store
 -	`index.js`：layout入口代码,组装sections和app的store及路由
+
+**action的结构规范**
+```
+const ACTION_TYPE = 'ACTION_TYPE';// 定义action的type常量
+{
+  type: type常量,
+  payload: action携带的参数,
+  error: action中的错误信息(可选)
+  done: action中的完成信息(可选)
+}
+```
+如果在action中携带了error或done的信息，则layout会对他做全局提示。
+一个例子：
+```
+const FETCH_TODO_SUCCESS = 'FETCH_TODO_SUCCESS';
+{
+  type: FETCH_TODO_SUCCESS,
+  payload: {
+    todos: [...]
+  },
+  done: '获取成功'// 可缺省
+}
+
+const SAVE_TODO_ERROR = 'SAVE_TODO_ERROR';
+{
+  type: SAVE_TODO_ERROR,
+  payload: {},
+  error: '保存Todo失败'
+}
+```
 
 ####	sections
 app的内容模块，用于插入组装到app的layout中，每个section的输出对象，必须含有以下属性：
