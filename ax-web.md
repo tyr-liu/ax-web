@@ -10,7 +10,7 @@ ax-web是基于React实现的一套开发模式，以组件化开发的方式，
 
 ax-web是一套模式，框架本身由Layout决定，你可以替换不同的Layout。这里只介绍针对安心云的Layout。
 
-###	requirement
+##	使用准备
 使用ax-web之前你需要了解如下内容：
 
 -	[React](http://facebook.github.io/react/)
@@ -18,169 +18,180 @@ ax-web是一套模式，框架本身由Layout决定，你可以替换不同的La
 -	[node & npm](https://nodejs.org/en/)
 -	[es6 & babel](https://babeljs.io/)
 -	[webpack](https://webpack.github.io/)
--	[material-ui](http://www.material-ui.com/)(暂定)
+-	[ant-design](http://ant.design/)
+-	[jest](http://facebook.github.io/jest/index.html)
 
-如果你对React并不了解，可以通过[react-step-by-step](react-step-by-step)系列了解更多
+如果你对React并不了解，可以通过[react-step-by-step](react-step-by-step)系列了解更多 or follow this(╯‵□′)╯ [react-howto](https://github.com/petehunt/react-howto).
 
-follow this(╯‵□′)╯ [react-howto](https://github.com/petehunt/react-howto), maybe helpful. 
-
-### modules
-ax-web 包含如下几个模块：
-
--	1.Layout
--	2.Sections
--	3.Components
-
-从分工的角度看：
-
-平台组负责Layout和Components
-产品组负责Sections和组装它
-
-#### Layout
-web app的骨架。
-
-Layout本身只关注提供服务：路由，Store，页面框架；而不关心web app究竟包含哪些内容，所以一个web app的代码也许是这样：
-``` javascript
-'use strict';
-
-import React from 'react';
-
-class App extends React.Component {
-	...
-	render() {
-		return <Layout sections={[section1, section2...]}>
-	}
-}
+##	代码结构
+```
+app
+|-assets
+|	|-images
+|-build
+|-jest
+|	|-preprocessor.js
+|-src
+|	|-components
+|	|-layout
+|	|-sections
+|	|-utils
+|	|-app.js
+|	|-index.js
+|-.babelrc
+|-index.html
+|-package.json
+|-webpack.config.js
 ```
 
-####Sections
-web app的内容。
+###	外部结构说明
+####	assets
+用于存放app需要用到的静态资源，如：图片，文档等。
 
-section的开发和api，包括以下部分：
+####	build
+用于存放构建打包后的js文件。
 
--	interface
-``` javascript
-export default {
-	name: '', // 名称，用于Layout中的菜单展示
-	icon: '', // 图标，用于Layout中的菜单展示，参见：https://www.google.com/design/icons/
-	reducers: {}, // 向Layout中的store注入的reducers，参见：redux
-	routes: [] // 向Layout中的router注入的routes，参见下一节
-}
+####	jest
+只包含jest单元测试所需的预处理脚本。
+
+####	src
+用于存放开发的js文件，下一节会重点详细说明其结构。
+
+####	.babelrc
+babel配置文件
+
+####	index.html
+单页html容器，通过`<script>`引入build目录中的构建结果。
+
+####	package.json
+项目信息描述文件，其中包含了需要使用到的npm库的描述。以及以下几个脚本：
 ```
--	routes
-route对象数组
-
-	type：
-	- inner: 在页面框架内呈现
-	- outer: 在页面框架外呈现
-	- home: 框架主页，一般只有一个  
-
-	route：
-	- name：名称，用于Layout中的菜单展示
-	- icon：图标，同section的icon
-	- path: 路由路径
-	- component: 路由对应的组件
-	- childRoutes: 自路由，包含一个route对象
-	
-	example：
-	``` javascript
-	export default [
-	    {type: 'inner', route: {path:"org", component: Organization, name:"组织管理", icon:"group"
-		    , childRoutes:[
-		        {path: "base", component: OrganizationBase},
-		        {path: "role", component: OrganizationRole}
-	    ] }},
-	    {type: 'inner', route: {path:"user", component: User, name:"用户管理", icon:"person" }},
-	    {type: 'outer', route: {path:"login", component: Login }}
-];
-	```
-
-#### Components
-用于表现内容的傀儡。
-
-基于material-ui（或其他）构建的一系列可重用的组件。这些组件与业务无关。
-
-#### Store
-提供全局的状态管理。
-
-使用react-redux的connect引入store，并可以在组件中注入自生注册的reducers或其他sections的reducers。
-
-example:
-```javascript
-'use strict';
-
-import React from 'react';
-import {connect} from 'react-redux';
-
-class Home extends React.Component {
-    render() {
-        return <h1>Welcome to {this.props.title}</h1>
-    }
-}
-
-export default {
-    reducers: {},
-    routes: [{
-        type: 'home', route: {
-            component: connect(state=> ({
-                title: state.Global.title
-            }))(Home)
-        }
-    }]
-};
+"test": "jest", // 执行单元测试
+"start": "set NODE_ENV=development && webpack-dev-server --hot --port 5000",// 启动调试
+"build:dev": "set NODE_ENV=development && webpack-dev-server --hot",// 开发构建
+"build": "set NODE_ENV=production && webpack"// 发布构建
 ```
 
-## usage
+####	webpack.config.js
+webpack打包构建配置文件
 
-### start up your App！
-index.js
-```	javascript
-'use strict';
-
-import React from 'react';
-import { render } from 'react-dom';
-import App from './app';
-
-render((
-    <App />
-), document.getElementById('App'));
+###	src代码结构
+```
+|-src
+|	|-components
+|	|-layout
+|	|-sections
+|	|-utils
+|	|-app.js
+|	|-index.js
 ```
 
-app.js
-``` javascript
-'use strict';
+####	components
+用于存放业务无关的通用`呈现组件`,例如：折线图组件。
+```
+|-src
+|	|-components
+|	|	|-example
+|	|	|	|-__tests__
+|	|	|	|-index.js
+|	|	|	|-style.css
+|	|	|-...
+|	|-...
+|-..
+```
+-	`__tests__`:单元测试代码
+-	`index.js`:组件代码
+-	`style.css`:样式代码,也可以使用less或sass
 
-import React from 'react';
-
-import Layout from './components/layout/index';
-import AuthSection from './sections/auth';// example
-import HomeSection from './sections/home';// example
-//... import your customized sections
-
-class App extends React.Component {
-    render() {
-        let sections = [
-            AuthSection,
-            HomeSection,
-            //...
+####	layout
+整个app的根组件，也是整个框架的外部容器。app的store和Router都在layout中维护。内容模块通过section属性注入，如：
+```
+let sections = [
+            Struct,
+            Alarm,
+            Profile,
+            Management,
+            Auth
         ];
 
-		// use a layout, inject the sections, that's all!
-        return (
-            <Layout 
-	            title='your system name or any string' 
-	            sections={sections} />
-        );
-    }
-}
+return <Layout sections={sections}/>
+```
+代码结构如下：
+```
+|-src
+|	|-layout
+|	|	|-__tests__
+|	|	|-actions
+|	|	|-components
+|	|	|-containsers
+|	|	|-reducers
+|	|	|-store
+|	|	|-index.js
+|	|-...
+|-...
+```
+-	`__tests__`:单元测试代码
+-	`actions`：actionCreator
+-	`components`:带有一定业务相关的非通用`呈现组件`。组件的文件组织方式和src中的components相同
+-	`containers`:外部框架的`容器组件`
+-	`reducers`:全局对action的处理reducer或layout内部的reducer
+-	`store`:全局唯一的store
+-	`index.js`：layout入口代码,组装sections和app的store及路由
 
-export default App;
+####	sections
+app的内容模块，用于插入组装到app的layout中，每个section的输出对象，必须含有以下属性：
+```
+import routes from './routes';
+import reducers from './reducers';
+import actions from './actions';
 
+export default {
+    name: '',// 模块名称，用于导航展示，如果不填写则不在导航中展示
+    icon: '',// 模块图标(ant-design的icon type名称), 用于导航展示
+    reducers: reducers,// 模块内的reducers,用于插入到layout维护的根部store,类型为对象
+    routes: routes,// 模块内的路由,类型为数组
+    actions: actions// 模块内的actionCreators,用于根部调用,类型为对象
+};
+```
+路由配置为一个对象数组，每个对象包含以下属性：
+-	type：inner,outer,home的枚举，分别表示：框架内嵌套路由，框架外路由和框架主页
+-	name: 路由名称，用于导航展示，可以不填，不填则不在导航展示
+-	icon: 路由图标，用于导航展示，可以不填
+-	route: 路由对象，和react-router路由对象匹配，可以包含`path`,`component`,`indexRoute`,`childRoutes`等属性
+
+举个例子：
+```
+export default [
+    {type: 'outer', route: {path:"login", component: Login }},
+    {type: 'inner', name:'角色管理', icon: 'team', route: {path: 'role', component: Role}},
+    {type: 'inner', name:'权限分配', icon: 'solution', route: {path: 'privilege', component: Privilege}},
+    {type: 'inner', name:'用户管理', icon: 'user', route: {path: 'user', component: User}}
+];
 ```
 
-### customized section
+每个section的代码结构：
+```
+|-src
+|	|-sections
+|	|	|-example
+|	|	|	|-__tests__
+|	|	|	|-actions
+|	|	|	|-components
+|	|	|	|-containers
+|	|	|	|-reducers
+|	|	|	|-index.js
+|	|	|	|-routes.js
+|	|	|-...
+|	|-...
+|-...
+```
+包含的结构和layout相似，只是不在模块内容维护store，而是暴露reducers由layout组装。
 
-see "ax-web alpha" demo:
-[https://10.8.30.22/svn/FS-SSMC/trunk/3.00.10/code/web/fs-npm/client/fs-app/src/sections](https://10.8.30.22/svn/FS-SSMC/trunk/3.00.10/code/web/fs-npm/client/fs-app/src/sections)
+####	utils
+用于存放帮助类或函数
 
+####	app.js
+组合layout和sections的脚本
 
+####	index.js
+启动app组件的脚本
